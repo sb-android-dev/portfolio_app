@@ -20,7 +20,7 @@ class ChangeImage extends StatelessWidget {
             _getFromGallery(context);
           }, child: const Text('Open Gallery')),
           ElevatedButton(onPressed: () {
-
+            _getFromCamera(context);
           }, child: const Text('Open Camera'))
         ],
       ),
@@ -29,6 +29,18 @@ class ChangeImage extends StatelessWidget {
 
   _getFromGallery(BuildContext context, [bool mounted = true]) async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1080, maxHeight: 1080);
+
+    if(pickedFile != null) {
+      XFile file = XFile(pickedFile.path);
+
+      if(!mounted) return;
+
+      Navigator.pop(context, file);
+    }
+  }
+
+  _getFromCamera(BuildContext context, [bool mounted = true]) async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera, maxWidth: 1080, maxHeight: 1080);
 
     if(pickedFile != null) {
       XFile file = XFile(pickedFile.path);

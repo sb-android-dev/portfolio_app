@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio_app/models/Portfolio.dart';
+import 'package:portfolio_app/shared_prefs/shared_pref.dart';
 
-class EditDetails extends StatelessWidget {
-  EditDetails({super.key, required this.portfolio});
+class EditDetails extends StatefulWidget {
+  const EditDetails({super.key});
 
-  final Portfolio? portfolio;
+  @override
+  State<EditDetails> createState() => _EditDetailsState();
+}
 
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final descController = TextEditingController();
+class _EditDetailsState extends State<EditDetails> {
+  final _portfolioPref = PortfolioPref();
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _descController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    populateFields();
+  }
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = portfolio?.name ?? '';
-    emailController.text = portfolio?.email ?? '';
-    descController.text = portfolio?.shortDesc ?? '';
-
     final ButtonStyle style = ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0));
 
@@ -35,7 +43,7 @@ class EditDetails extends StatelessWidget {
               TextField(
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(), labelText: 'Enter Name'),
-                controller: nameController,
+                controller: _nameController,
               ),
               const SizedBox(
                 height: 32,
@@ -43,7 +51,7 @@ class EditDetails extends StatelessWidget {
               TextField(
                 decoration: const InputDecoration(
                     border: OutlineInputBorder(), labelText: 'Enter Email'),
-                controller: emailController,
+                controller: _emailController,
               ),
               const SizedBox(
                 height: 32,
@@ -55,7 +63,7 @@ class EditDetails extends StatelessWidget {
                 keyboardType: TextInputType.multiline,
                 minLines: 3,
                 maxLines: 5,
-                controller: descController,
+                controller: _descController,
               ),
               const SizedBox(
                 height: 32,
@@ -63,9 +71,7 @@ class EditDetails extends StatelessWidget {
               ElevatedButton(
                   style: style,
                   onPressed: () {
-                    Portfolio portfolio = Portfolio(nameController.text,
-                        emailController.text, descController.text);
-                    Navigator.pop(context, portfolio);
+                    _updatePortfolio(context);
                   },
                   child: const Text(
                     'Update Details',
@@ -76,5 +82,21 @@ class EditDetails extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updatePortfolio(BuildContext context) async {
+    Portfolio portfolio = Portfolio(_nameController.text, _emailController.text, _descController.text);
+
+    _portfolioPref.savePortfolio(portfolio)
+        .then((value) => {Navigator.pop(context, portfolio)});
+  }
+
+  void populateFields() async {
+    final portfolio = await _portfolioPref.getPortfolio();
+    setState(() {
+      _nameController.text = portfolio.name;
+      _emailController.text = portfolio.email;
+      _descController.text = portfolio.shortDesc;
+    });
   }
 }
