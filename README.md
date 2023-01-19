@@ -1,6 +1,18 @@
-# portfolio_app
+# Portfolio App
 
-A flutter learning app.
+Start learning Flutter by building this app.
+
+## Learned about
+- Text
+- TextField
+- FloatingActionButton
+- Image
+- ElevatedButton
+- Screen navigation with results
+- Splash screen
+- Change app icon & name
+- Shared preference
+- Get image from gallery & camera
 
 ## Getting Started
 
